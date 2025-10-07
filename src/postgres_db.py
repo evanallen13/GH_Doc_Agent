@@ -21,7 +21,6 @@ class VectorDB:
                 CREATE TABLE IF NOT EXISTS documents (
                     id SERIAL PRIMARY KEY,
                     content TEXT,
-                    output TEXT,
                     embedding VECTOR({dim})
                 );
             """)
@@ -37,12 +36,12 @@ class VectorDB:
         except Exception as e:
             print("❌ Error deleting database:", e)
 
-    def insert_document(self, content, output, embedding):
+    def insert_document(self, content, embedding):
         """Insert a document and its embedding"""
         try:
             self.cur.execute(
-                "INSERT INTO documents (content, output, embedding) VALUES (%s, %s, %s);",
-                (content, output, embedding)
+                "INSERT INTO documents (content, embedding) VALUES (%s, %s);",
+                (content, embedding)
             )
         except Exception as e:
             print("❌ Error inserting document:", e)
@@ -52,7 +51,7 @@ class VectorDB:
         try:
             self.cur.execute(
                 """
-                SELECT id, content, output, embedding <-> %s::vector AS distance,
+                SELECT id, content, embedding <-> %s::vector AS distance,
                        1 - (embedding <-> %s::vector) AS similarity
                 FROM documents
                 ORDER BY embedding <-> %s::vector
