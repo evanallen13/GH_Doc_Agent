@@ -1,20 +1,41 @@
 services:
-    app:
-        image: python:3.10.16-bullseye
-        command: sleep infinity
-        working_dir: /workspaces/Dev-Container-Compose
-        volumes:
-        - ..:/workspaces/Dev-Container-Compose
-        
-    ollama:
-        image: ollama/ollama:latest
-        container_name: ollama
-        restart: unless-stopped
-        ports:
-            - "11434:11434"
-        volumes:
-            - ollama_data:/root/.ollama
-            
+  app:
+    image: python:3.10.16-bullseye
+    command: sleep infinity
+    working_dir: /workspaces/Dev-Container-Compose
+    volumes:
+      - ..:/workspaces/Dev-Container-Compose
+    networks:
+      - backend
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - backend
+
+  db:
+    image: ankane/pgvector:latest   # Postgres with pgvector preinstalled
+    container_name: vector-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vectordb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+
 volumes:
   ollama_data:
     driver: local
+  pgdata:
+    driver: local
+
+networks:
+  backend:
+    driver: bridge
