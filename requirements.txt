@@ -1,2 +1,3 @@
 requests
-pillow
+langchain_text_splitters
+langchain_community
