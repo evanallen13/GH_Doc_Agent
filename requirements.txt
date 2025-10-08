@@ -2,3 +2,4 @@ requests
 langchain_text_splitters
 langchain_community
 psycopg2
+openai
